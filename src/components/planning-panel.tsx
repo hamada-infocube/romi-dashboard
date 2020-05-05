@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, makeStyles, Slide } from '@material-ui/core';
 import { Close as CloseIcon, KeyboardBackspace as BackIcon } from '@material-ui/icons';
-import * as RomiCore '@osrf/romi-js-core-interfaces';
+import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import React from 'react';
 import { PlanningPanelViewProps } from './planning-panel-view';
 
