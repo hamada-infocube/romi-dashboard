@@ -1,5 +1,5 @@
 import { AppBar, Fade, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core/';
-import { Dashboard as DashboardIcon, Settings as SettingsIcon } from '@material-ui/icons';
+import { Dashboard as DashboardIcon, CallSplit as PlanningIcon, Settings as SettingsIcon } from '@material-ui/icons';
 import * as RomiCore from '@osrf/romi-js-core-interfaces';
 import debug from 'debug';
 import React from 'react';
@@ -24,6 +24,8 @@ import RobotsPanel from './robots-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
+import PlanningPanel from './planning-panel';
+import PlanningPanelView from './planning-panel-view';
 
 const borderRadius = 20;
 
@@ -145,6 +147,8 @@ export default function App(props: AppProps): JSX.Element {
   const [loading, setLoading] = React.useState<LoadingScreenProps | null>({
     caption: 'Connecting to SOSS...',
   });
+
+  const [showPlanningPanel, setShowPlanningPanel] = React.useState(false);
 
   const [showSettings, setShowSettings] = React.useState(false);
   const [settings, setSettings] = React.useState<Settings>(() => loadSettings());
@@ -305,6 +309,9 @@ export default function App(props: AppProps): JSX.Element {
               <IconButton color="inherit" onClick={() => setShowOmniPanel(!showOmniPanel)}>
                 <DashboardIcon />
               </IconButton>
+              <IconButton color="inherit" onClick={() => setShowPlanningPanel(!showPlanningPanel)}>
+                <PlanningIcon />
+              </IconButton>
               <IconButton color="inherit" onClick={() => setShowSettings(true)}>
                 <SettingsIcon />
               </IconButton>
@@ -357,6 +364,19 @@ export default function App(props: AppProps): JSX.Element {
                 <DispensersPanel dispenserStates={dispenserStates} spotlight={dispenserSpotlight} />
               </OmniPanelView>
             </OmniPanel>
+          </Fade>
+          <Fade in={showPlanningPanel}>
+            <PlanningPanel
+              className={classes.omniPanel}
+              classes={{
+                backButton: classes.topLeftBorder,
+                closeButton: classes.topRightBorder,
+              }}
+              view={currentView}
+              onBack={handleBack}
+              onClose={handleClose}
+            >
+            </PlanningPanel>
           </Fade>
           <SettingsDrawer
             settings={settings}
