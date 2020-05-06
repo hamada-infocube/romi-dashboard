@@ -21,8 +21,8 @@ export interface Plan {
 
 export interface PlannerConfigRequest {
   request: 'planner_config';
+  id: number;
   param: {
-    id: number;
     profile_radius: number;
     linear_velocity: number;
     linear_acceleration: number;
@@ -43,8 +43,8 @@ export interface PlannerConfigResponse {
 
 export interface StartPlanningRequest {
   request: 'start_planning';
+  id: number;
   param: {
-    id: string;
     start: {
       x: number;
       y: number;
@@ -56,35 +56,33 @@ export interface StartPlanningRequest {
 
 export interface StartPlanningResponse {
   response: 'start_planning';
-  id: string;
+  id: number;
   values: Plan[];
   error: string;
 }
 
 export interface StepRequest {
   request: 'step';
-  param: {
-    id: string;
-  };
+  id: number;
+  param: {};
 }
 
 export interface StepResponse {
   response: 'step';
-  id: string;
+  id: number;
   values: Plan[];
   error: string;
 }
 
 export interface ClosePlannerRequest {
   request: 'close_planner';
-  param: {
-    id: string;
-  };
+  id: number;
+  param: {};
 }
 
 export interface ClosePlannerResponse {
   response: 'close_planner';
-  id: string;
+  id: number;
   values: {
     success: boolean;
   };
@@ -100,12 +98,13 @@ export interface PlanningManager {
 
 interface Request {
   request: string;
+  id: number;
   param: unknown;
 }
 
 interface Response {
   response: string;
-  id: string;
+  id: number;
   values: unknown;
   error: string;
 }

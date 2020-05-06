@@ -26,6 +26,7 @@ import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
 import PlanningPanel from './planning-panel';
 import PlanningPanelView from './planning-panel-view';
+import { PlanningManager } from '../planning-manager';
 
 const borderRadius = 20;
 
@@ -97,10 +98,11 @@ const viewMap = makeViewMap();
 
 export default function App(props: AppProps): JSX.Element {
   const classes = useStyles();
-  const { transportFactory, trajectoryManagerFactory } = props.appConfig;
+  const { transportFactory, trajectoryManagerFactory, planningManagerFactory } = props.appConfig;
   const [transport, setTransport] = React.useState<RomiCore.Transport | undefined>(undefined);
   const [buildingMap, setBuildingMap] = React.useState<RomiCore.BuildingMap | undefined>(undefined);
   const trajManager = React.useRef<RobotTrajectoryManager | undefined>(undefined);
+  const planningManager = React.useRef<PlanningManager | undefined>(undefined);
 
   const doorStateManager = React.useMemo(() => new DoorStateManager(), []);
   const [doorStates, setDoorStates] = React.useState<Readonly<Record<string, RomiCore.DoorState>>>(
@@ -199,6 +201,15 @@ export default function App(props: AppProps): JSX.Element {
       trajManager.current = await trajectoryManagerFactory();
     })();
   }, [trajectoryManagerFactory]);
+
+  React.useEffect(() => {
+    if (!planningManagerFactory) {
+      return;
+    }
+    (async () => {
+      planningManager.current = await planningManagerFactory();
+    })();
+  }, [planningManagerFactory])
 
   React.useEffect(() => {
     if (currentView === OmniPanelViewIndex.Doors) {

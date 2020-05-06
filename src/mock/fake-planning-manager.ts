@@ -9,7 +9,7 @@ import {
   ClosePlannerRequest,
   ClosePlannerResponse,
 } from '../planning-manager';
-import plan from './data/plan.json';
+import plans from './data/plans.json';
 
 export default class FakePlanningManager implements PlanningManager {
   async configurePlanner(request: PlannerConfigRequest): Promise<PlannerConfigResponse> {
@@ -22,7 +22,7 @@ export default class FakePlanningManager implements PlanningManager {
       // maybe check for the existence of the file
       return {
         response: request.request,
-        id: request.param.id,
+        id: request.id,
         values: {
           success: false,
         },
@@ -31,7 +31,7 @@ export default class FakePlanningManager implements PlanningManager {
     }
     return {
       response: request.request,
-      id: request.param.id,
+      id: request.id,
       values: {
         success: true,
       },
@@ -40,38 +40,36 @@ export default class FakePlanningManager implements PlanningManager {
   }
 
   async startPlanning(request: StartPlanningRequest): Promise<StartPlanningResponse> {
-    let resp_plan = plan;
-    resp_plan.response = request.request;
-    resp_plan.id = request.param.id;
-
-    resp_plan.id = request.param.id;
-    resp_plan.response = 'start_planning';
-    return resp_plan;
+    this.currentPlanStep = 0;
+    const plan = plans[this.currentPlanStep];
+    let plan_data = JSON.parse(JSON.stringify(plan)) as StartPlanningResponse;
+    plan_data.response = request.request;
+    plan_data.id = request.id;
+    plan_data.error = '';
+    return plan_data;
   }
-  // async startPlanning(request: StartPlanningRequest): Promise<StartPlanningResponse> {
-  //   const event = await this._send(JSON.stringify(request));
-  //   const resp = JSON.parse(event.data);
-  //   this._checkResponse(request, resp);
-  //   if (resp.values === null) {
-  //     resp.values = [];
-  //   }
-  //   return resp as StartPlanningResponse;
-  // }
 
-  // async stepPlanner(request: StepRequest): Promise<StepResponse> {
-  //   const event = await this._send(JSON.stringify(request));
-  //   const resp = JSON.parse(event.data);
-  //   this._checkResponse(request, resp);
-  //   if (resp.values === null) {
-  //     resp.values = [];
-  //   }
-  //   return resp as StepResponse;
-  // }
+  async stepPlanner(request: StepRequest): Promise<StepResponse> {
+    this.currentPlanStep++;
+    const plan = plans[this.currentPlanStep];
 
-  // async closePlanner(request: ClosePlannerRequest): Promise<ClosePlannerResponse> {
-  //   const event = await this._send(JSON.stringify(request));
-  //   const resp = JSON.parse(event.data);
-  //   this._checkResponse(request, resp);
-  //   return resp as ClosePlannerResponse;
-  // }
+    let plan_data = JSON.parse(JSON.stringify(plan)) as StepResponse;
+    plan_data.response = request.request;
+    plan_data.id = request.id;
+    plan_data.error = '';
+    return plan_data;
+  }
+
+  async closePlanner(request: ClosePlannerRequest): Promise<ClosePlannerResponse> {
+    return {
+      response: request.request,
+      id: request.id,
+      values: {
+        success: true,
+      },
+      error: '',
+    }
+  }
+
+  private currentPlanStep = 0;
 }
