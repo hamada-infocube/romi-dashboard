@@ -20,6 +20,7 @@ import MainMenu from './main-menu';
 import OmniPanel from './omni-panel';
 import OmniPanelView from './omni-panel-view';
 import RobotsPanel from './robots-panel';
+import NegotiationsPanel from './negotiations-panel';
 import ScheduleVisualizer from './schedule-visualizer';
 import SettingsDrawer from './settings-drawer';
 import { SpotlightValue } from './spotlight-value';
@@ -80,6 +81,7 @@ enum OmniPanelViewIndex {
   Lifts,
   Robots,
   Dispensers,
+  Negotiations
 }
 
 class ViewMapNode {
@@ -100,6 +102,7 @@ function makeViewMap(): ViewMap {
   viewMap[OmniPanelViewIndex.Lifts] = root.addChild(OmniPanelViewIndex.Lifts);
   viewMap[OmniPanelViewIndex.Robots] = root.addChild(OmniPanelViewIndex.Robots);
   viewMap[OmniPanelViewIndex.Dispensers] = root.addChild(OmniPanelViewIndex.Dispensers);
+  viewMap[OmniPanelViewIndex.Negotiations] = root.addChild(OmniPanelViewIndex.Negotiations);
   return viewMap;
 }
 
@@ -139,6 +142,10 @@ export default function App(props: AppProps): JSX.Element {
     Readonly<Record<string, RomiCore.DispenserState>>
   >({});
   const [dispenserSpotlight, setDispenserSpotlight] = React.useState<
+    SpotlightValue<string> | undefined
+  >(undefined);
+
+  const [negotiationSpotlight, setNegotiationSpotlight] = React.useState<
     SpotlightValue<string> | undefined
   >(undefined);
 
@@ -238,6 +245,19 @@ export default function App(props: AppProps): JSX.Element {
   }, [currentView, dispenserStateManager]);
 
   React.useEffect(() => {
+    if (currentView === OmniPanelViewIndex.Negotiations) {
+      // const listener = () => setNegotiationStates(negotiationStateManager.dispenserStates());
+      // dispenserStateManager.on('updated', listener);
+      // debug.log('started tracking dispenser states');
+      // return () => {
+      //   dispenserStateManager.off('updated', listener);
+      //   debug.log('stopped tracking dispenser states');
+      // };
+      console.log("negotiations!!!");
+    }
+  }, [currentView/*, dispenserStateManager*/]);
+
+  React.useEffect(() => {
     setDoors(buildingMap ? buildingMap.levels.flatMap(x => x.doors) : []);
     setLifts(buildingMap ? buildingMap.lifts : []);
   }, [buildingMap]);
@@ -265,6 +285,7 @@ export default function App(props: AppProps): JSX.Element {
     setLiftSpotlight(undefined);
     setRobotSpotlight(undefined);
     setDispenserSpotlight(undefined);
+    setNegotiationSpotlight(undefined);
   }
 
   function handleClose() {
@@ -297,6 +318,10 @@ export default function App(props: AppProps): JSX.Element {
 
   function handleMainMenuDispensersClick(): void {
     setCurrentView(OmniPanelViewIndex.Dispensers);
+  }
+
+  function handleMainMenuNegotiationsClick(): void {
+    setCurrentView(OmniPanelViewIndex.Negotiations);
   }
 
   return (
@@ -348,6 +373,7 @@ export default function App(props: AppProps): JSX.Element {
                   onLiftsClick={handleMainMenuLiftsClick}
                   onRobotsClick={handleMainMenuRobotsClick}
                   onDispensersClick={handleMainMenuDispensersClick}
+                  onNegotiationsClick={handleMainMenuNegotiationsClick}
                 />
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Doors}>
@@ -371,6 +397,9 @@ export default function App(props: AppProps): JSX.Element {
               </OmniPanelView>
               <OmniPanelView id={OmniPanelViewIndex.Dispensers}>
                 <DispensersPanel dispenserStates={dispenserStates} spotlight={dispenserSpotlight} />
+              </OmniPanelView>
+              <OmniPanelView id={OmniPanelViewIndex.Negotiations}>
+                <NegotiationsPanel spotlight={negotiationSpotlight} />
               </OmniPanelView>
             </OmniPanel>
           </Fade>
